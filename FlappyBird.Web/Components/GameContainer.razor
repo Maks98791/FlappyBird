@@ -1,0 +1,45 @@
+﻿@namespace FlappyBird.Web.Models
+
+@code {
+    GameManager _gameManager { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _gameManager = new GameManager();
+        _gameManager.PropertyChanged += (o, e) => StateHasChanged();
+    }
+
+    void StartGame()
+    {
+        _gameManager.MainLoop();
+    }
+
+    void HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (_gameManager.IsRunning && e.Key == " ")
+        {
+            _gameManager.Bird.Jump();
+        }
+    }
+}
+
+@if (_gameManager == null)
+{
+    <em>Loading ...</em>
+}
+else
+{
+    <div class="border-left"></div>
+    <div class="game-container" tabindex="0" @onclick="StartGame" @onkeyup="HandleKeyUp">
+        <div class="border-top"></div>
+        <div class="sky">
+            <FlappyBird.Web.Components.Bird Model="_gameManager.Bird"/>
+        </div>
+        <div class="ground"></div>
+        @foreach(var pipe in _gameManager.Pipes)
+        {
+            <FlappyBird.Web.Components.Pipe Model="pipe"></FlappyBird.Web.Components.Pipe>
+        }
+    </div>
+    <div class="border-right"></div>
+}
